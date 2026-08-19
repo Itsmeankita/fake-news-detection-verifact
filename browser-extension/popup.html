@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    width: 320px; padding: 16px; font-family: -apple-system, Inter, sans-serif;
+    background: #0B1220; color: #E8EDF4; margin: 0;
+  }
+  h1 { font-size: 1rem; margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
+  h1 .mark { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg,#5B8DEF,#3DDC97); color:#06101F; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.65rem; }
+  textarea {
+    width: 100%; height: 90px; background: #131B2E; border: 1px solid #263352;
+    border-radius: 8px; color: #E8EDF4; padding: 10px; font-size: 0.85rem;
+    box-sizing: border-box; resize: vertical; font-family: inherit;
+  }
+  button {
+    width: 100%; margin-top: 10px; background: #5B8DEF; color: #06101F; border: none;
+    padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  #result { margin-top: 14px; font-size: 0.85rem; display: none; }
+  .verdict { font-weight: 700; font-size: 1.1rem; text-align: center; display: block; margin-bottom: 4px; }
+  .real { color: #3DDC97; }
+  .fake { color: #FF5D5D; }
+  .conf { text-align: center; display: block; color: #8592AB; font-size: 0.78rem; margin-bottom: 10px; }
+  .err { color: #FF5D5D; font-size: 0.8rem; margin-top: 10px; }
+  .footnote { font-size: 0.7rem; color: #5B6478; margin-top: 12px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1><span class="mark">VF</span> VeriFact</h1>
+  <textarea id="text" placeholder="Select text on any page and right-click 'Check with VeriFact', or paste here directly."></textarea>
+  <button id="checkBtn">Analyze</button>
+  <div id="result"></div>
+  <p class="footnote">Requires the VeriFact Flask app running locally on port 5000.</p>
+  <script src="popup.js"></script>
+</body>
+</html>

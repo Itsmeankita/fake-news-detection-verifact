@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Log in — VeriFact Pro{% endblock %}
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card">
+    <span class="eyebrow">Welcome back</span>
+    <h1>Log in to VeriFact</h1>
+    <p class="lead">Access your detection history and saved reports.</p>
+    <form method="POST" class="auth-form">
+      <label class="field-label">Username or email</label>
+      <input type="text" name="username" required autofocus>
+      <label class="field-label">Password</label>
+      <input type="password" name="password" required>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
+    <p class="auth-switch">New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
+  </div>
+</section>
+{% endblock %}

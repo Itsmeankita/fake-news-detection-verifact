@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Compare — VeriFact Pro{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Compare mode</span>
+    <h1>Two articles, side by side.</h1>
+    <p class="lead">Useful for comparing how the same story is reported differently across sources.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    {% if not model_ready %}
+    <div class="notice notice-warn"><strong>Model not trained yet.</strong> Run <code>python model/train_model.py</code> first.</div>
+    {% endif %}
+
+    <div class="compare-layout">
+      <div class="detect-input-panel">
+        <label class="field-label">Article A</label>
+        <textarea id="textA" rows="10" placeholder="Paste the first article..."></textarea>
+      </div>
+      <div class="detect-input-panel">
+        <label class="field-label">Article B</label>
+        <textarea id="textB" rows="10" placeholder="Paste the second article..."></textarea>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin: 24px 0;">
+      <button id="compareBtn" class="btn btn-primary" {{ 'disabled' if not model_ready }}>Compare articles</button>
+    </div>
+
+    <div id="compareError" class="result-error" style="display:none; text-align:center;"></div>
+
+    <div class="compare-layout" id="compareResults" style="display:none;">
+      <div class="detect-result-panel compare-result-panel" id="resultPanelA"></div>
+      <div class="detect-result-panel compare-result-panel" id="resultPanelB"></div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}How it works — VeriFact{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Methodology</span>
+    <h1>How the model actually works.</h1>
+    <p class="lead">No black box — here's the full pipeline, from raw text to verdict.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="pipeline">
+
+      <div class="pipeline-step">
+        <div class="pipeline-num">1</div>
+        <div>
+          <h3>Dataset</h3>
+          <p>
+            The model is trained on the <strong>ISOT Fake and Real News
+            Dataset</strong> — roughly 45,000 labeled articles: ~23,000
+            fabricated / hyperpartisan articles collected from flagged
+            unreliable sites, and ~21,000 real Reuters wire articles. Each
+            row is just <code>text</code> + <code>label</code> (REAL or FAKE).
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="pipeline-num">2</div>
+        <div>
+          <h3>Text cleaning</h3>
+          <p>Every article passes through the same cleaning function used at prediction time, so training and inference stay consistent:</p>
+          <ul class="check-list">
+            <li>Lowercase everything</li>
+            <li>Strip URLs, HTML tags, punctuation and numbers</li>
+            <li>Remove English stopwords (<em>"the", "is", "at"</em>...) — they carry no signal</li>
+            <li>Lemmatize remaining words (<em>"running" → "run"</em>) so related word forms count as the same feature</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="pipeline-num">3</div>
+        <div>
+          <h3>TF-IDF vectorization</h3>
+          <p>
+            Cleaned text is converted into numbers using
+            <strong>TF-IDF (Term Frequency–Inverse Document Frequency)</strong>.
+            It scores each word (and word pair) by how often it appears in
+            an article, discounted by how common it is across <em>all</em>
+            articles — so distinctive, telling words (like sensational
+            phrasing) matter more than generic ones. The vectorizer keeps
+            the top 5,000 unigram + bigram features.
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="pipeline-num">4</div>
+        <div>
+          <h3>Model training &amp; comparison</h3>
+          <p>Three classic, CPU-friendly classifiers are trained on the same TF-IDF features and compared on held-out test data:</p>
+          <div class="model-compare">
+            <div class="model-card">
+              <h4>Logistic Regression</h4>
+              <p>Learns a weighted combination of word features. Outputs well-calibrated probabilities — used for the confidence score shown on the Detect page.</p>
+            </div>
+            <div class="model-card">
+              <h4>Multinomial Naive Bayes</h4>
+              <p>A probabilistic baseline that assumes word features are independent. Fast, and a strong classic baseline for text classification.</p>
+            </div>
+            <div class="model-card">
+              <h4>Passive Aggressive Classifier</h4>
+              <p>An online linear model (similar to a linear SVM) that's especially common in fake-news-detection literature.</p>
+            </div>
+          </div>
+          <p>The best-performing model on the test set — typically Logistic Regression — is saved and deployed. Exact numbers for this build are on the <a href="{{ url_for('analytics') }}">Analytics page</a>.</p>
+        </div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="pipeline-num">5</div>
+        <div>
+          <h3>Evaluation</h3>
+          <p>
+            The dataset is split 80/20 into training and test sets. The
+            model never sees the test set during training, so its accuracy,
+            precision, recall, and F1-score reflect performance on genuinely
+            unseen articles.
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="pipeline-num">6</div>
+        <div>
+          <h3>Prediction at request time</h3>
+          <p>
+            When you submit text on the Detect page, the exact same cleaning
+            + TF-IDF steps run, the saved model scores it, and
+            <code>predict_proba()</code> returns a probability for REAL vs
+            FAKE — the higher one becomes the confidence score you see.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <span class="eyebrow">Honest limitations</span>
+    <h2>What this model can't do</h2>
+    <div class="limit-grid">
+      <div class="limit-card">
+        <h4>It reads style, not facts</h4>
+        <p>TF-IDF captures word patterns and phrasing common in real vs. fabricated articles — it doesn't verify claims against real-world facts the way a human fact-checker does.</p>
+      </div>
+      <div class="limit-card">
+        <h4>It reflects its training data</h4>
+        <p>It learns the specific style of the outlets in the ISOT dataset. Well-written misinformation or poorly-written real news can fool it.</p>
+      </div>
+      <div class="limit-card">
+        <h4>It's a signal, not a verdict</h4>
+        <p>Treat the output as a prompt to double-check a claim, not as definitive proof of truth or falsehood.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

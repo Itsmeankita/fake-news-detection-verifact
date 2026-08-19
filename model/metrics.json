@@ -1,0 +1,60 @@
+{
+  "dataset_source": "ISOT Fake and Real News Dataset + WELFake Dataset",
+  "total_articles": 63622,
+  "real_count": 32125,
+  "fake_count": 31497,
+  "train_size": 50897,
+  "test_size": 12725,
+  "avg_words_before_cleaning": 554.4,
+  "avg_words_after_cleaning": 307.2,
+  "vocabulary_size": 5000,
+  "deployed_model": "Logistic Regression",
+  "all_models": {
+    "Logistic Regression": {
+      "accuracy": 92.24,
+      "precision": 91.91,
+      "recall": 92.46,
+      "f1_score": 92.18,
+      "train_time_sec": 0.87
+    },
+    "Multinomial Naive Bayes": {
+      "accuracy": 79.62,
+      "precision": 77.04,
+      "recall": 83.83,
+      "f1_score": 80.29,
+      "train_time_sec": 0.22
+    },
+    "Passive Aggressive (Linear SVM-like)": {
+      "accuracy": 91.95,
+      "precision": 92.24,
+      "recall": 91.44,
+      "f1_score": 91.84,
+      "train_time_sec": 0.76
+    }
+  },
+  "deployed_metrics": {
+    "accuracy": 92.24,
+    "precision": 91.91,
+    "recall": 92.46,
+    "f1_score": 92.18,
+    "train_time_sec": 0.87
+  },
+  "confusion_matrix": {
+    "labels": [
+      "REAL",
+      "FAKE"
+    ],
+    "matrix": [
+      [
+        5912,
+        513
+      ],
+      [
+        475,
+        5825
+      ]
+    ]
+  },
+  "training_time_sec": 226.35,
+  "has_calibration_chart": true
+}

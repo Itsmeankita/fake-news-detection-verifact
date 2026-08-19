@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Admin — VeriFact Pro{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Admin panel</span>
+    <h1>System overview.</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="stat-cards">
+      <div class="stat-card">
+        <span class="stat-card-num">{{ users|length }}</span>
+        <span class="stat-card-label">Registered users</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num">{{ total_checks }}</span>
+        <span class="stat-card-label">Total checks logged</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num">{{ metrics.deployed_metrics.accuracy if metrics else '—' }}%</span>
+        <span class="stat-card-label">Current model accuracy</span>
+      </div>
+    </div>
+
+    <div class="notice notice-warn" style="margin-top:32px;">
+      <strong>Retraining:</strong> To retrain on updated data, run
+      <code>python model/train_model.py</code> from the project root, then
+      restart the app. (Kept as a manual terminal step deliberately —
+      training in-request would block the web server.)
+    </div>
+
+    <h3 style="margin-top:36px;">Users</h3>
+    <table class="data-table full-width">
+      <thead><tr><th>Username</th><th>Email</th><th>Joined</th><th>Admin</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.username }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.created_at.strftime('%d %b %Y') }}</td>
+          <td>{{ '✓' if u.is_admin else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

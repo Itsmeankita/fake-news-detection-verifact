@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — VeriFact Pro{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Your account</span>
+    <h1>Welcome back, {{ current_user.username }}.</h1>
+    <p class="lead">Here's your detection history and personal stats.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="stat-cards">
+      <div class="stat-card">
+        <span class="stat-card-num">{{ entries|length }}</span>
+        <span class="stat-card-label">Articles checked</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num c-real">{{ real_count }}</span>
+        <span class="stat-card-label">Flagged REAL</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num c-fake">{{ fake_count }}</span>
+        <span class="stat-card-label">Flagged FAKE</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num" style="font-size:1rem; word-break:break-all;">{{ current_user.api_key[:12] }}...</span>
+        <span class="stat-card-label">Your API key</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px;">Recent checks</h3>
+    <div style="margin-bottom:16px; display:flex; gap:10px; align-items:center;">
+      <input type="text" id="historySearch" placeholder="Search your history..." style="flex:1; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); padding:10px 14px; font-family:var(--font-body);">
+      <a href="{{ url_for('export_history') }}" class="btn btn-ghost">Export CSV</a>
+    </div>
+    {% if entries %}
+    <table class="data-table full-width" id="historyTable">
+      <thead>
+        <tr><th>Text</th><th>Verdict</th><th>Confidence</th><th>Source</th><th>When</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+        <tr>
+          <td style="max-width:340px;">{{ e.text_snippet }}</td>
+          <td class="{{ 'c-real' if e.prediction=='REAL' else 'c-fake' }}"><strong>{{ e.prediction }}</strong></td>
+          <td>{{ e.confidence }}%</td>
+          <td>{{ e.source }}</td>
+          <td>{{ e.created_at.strftime('%d %b, %H:%M') }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('delete_history_entry', entry_id=e.id) }}" style="display:inline;" onsubmit="return confirm('Delete this entry?');">
+              <button type="submit" class="icon-btn" title="Delete" style="width:28px;height:28px;font-size:0.75rem;">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="notice notice-warn">
+      No checks yet. <a href="{{ url_for('detect') }}">Analyze your first article →</a>
+    </div>
+    {% endif %}
+
+    <h3 style="margin-top:44px;">Change password</h3>
+    <form method="POST" action="{{ url_for('change_password') }}" class="auth-form" style="max-width:380px;">
+      <label class="field-label">Current password</label>
+      <input type="password" name="current_password" required>
+      <label class="field-label">New password</label>
+      <input type="password" name="new_password" required minlength="6">
+      <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Update password</button>
+    </form>
+  </div>
+</section>
+
+<script>
+document.getElementById("historySearch")?.addEventListener("input", (e) => {
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll("#historyTable tbody tr").forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
+});
+</script>
+
+{% endblock %}

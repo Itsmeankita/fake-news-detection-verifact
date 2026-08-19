@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Analytics — VeriFact{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Model performance</span>
+    <h1>Numbers, not vibes.</h1>
+    <p class="lead">Full transparency on the dataset, the models compared, and how the deployed model actually performs.</p>
+  </div>
+</section>
+
+{% if not model_ready %}
+<section class="section">
+  <div class="section-inner">
+    <div class="notice notice-warn">
+      <strong>No trained model found yet.</strong> Run
+      <code>python model/train_model.py</code> from the project root to
+      generate metrics and charts, then reload this page.
+    </div>
+  </div>
+</section>
+{% else %}
+
+<section class="section">
+  <div class="section-inner">
+    <div class="stat-cards">
+      <div class="stat-card">
+        <span class="stat-card-num">{{ metrics.deployed_metrics.accuracy }}%</span>
+        <span class="stat-card-label">Accuracy</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num">{{ metrics.deployed_metrics.precision }}%</span>
+        <span class="stat-card-label">Precision (Fake)</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num">{{ metrics.deployed_metrics.recall }}%</span>
+        <span class="stat-card-label">Recall (Fake)</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num">{{ metrics.deployed_metrics.f1_score }}%</span>
+        <span class="stat-card-label">F1-Score</span>
+      </div>
+    </div>
+    <p class="deployed-note">Deployed model: <strong>{{ metrics.deployed_model }}</strong> — trained on {{ metrics.train_size }} articles, tested on {{ metrics.test_size }} unseen articles.</p>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-inner two-col">
+    <div class="chart-card">
+      <h3>Confusion matrix</h3>
+      <img src="{{ url_for('static', filename='img/confusion_matrix.png') }}" alt="Confusion matrix" class="chart-img">
+      <p class="chart-caption">How often the deployed model's predictions matched the true label on the test set.</p>
+    </div>
+    <div class="chart-card">
+      <h3>Model comparison</h3>
+      <img src="{{ url_for('static', filename='img/model_comparison.png') }}" alt="Model accuracy comparison" class="chart-img">
+      <p class="chart-caption">Accuracy of all three candidate models on the same held-out test set.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner two-col">
+    <div class="chart-card">
+      <h3>Dataset class balance</h3>
+      <img src="{{ url_for('static', filename='img/class_balance.png') }}" alt="Dataset class balance" class="chart-img">
+      <p class="chart-caption">{{ metrics.real_count }} real vs {{ metrics.fake_count }} fake articles — {{ metrics.total_articles }} total.</p>
+    </div>
+    <div class="table-card">
+      <h3>Dataset &amp; preprocessing stats</h3>
+      <table class="data-table">
+        <tr><td>Source</td><td>{{ metrics.dataset_source }}</td></tr>
+        <tr><td>Total articles</td><td>{{ metrics.total_articles }}</td></tr>
+        <tr><td>Train / test split</td><td>{{ metrics.train_size }} / {{ metrics.test_size }}</td></tr>
+        <tr><td>Avg. words before cleaning</td><td>{{ metrics.avg_words_before_cleaning }}</td></tr>
+        <tr><td>Avg. words after cleaning</td><td>{{ metrics.avg_words_after_cleaning }}</td></tr>
+        <tr><td>TF-IDF vocabulary size</td><td>{{ metrics.vocabulary_size }}</td></tr>
+        <tr><td>Training time</td><td>{{ metrics.training_time_sec }}s</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+{% if has_wordclouds %}
+<section class="section section-alt">
+  <div class="section-inner two-col">
+    <div class="chart-card">
+      <h3>Real articles — common words</h3>
+      <img src="{{ url_for('static', filename='img/wordcloud_real.png') }}" alt="Word cloud of real articles" class="chart-img">
+      <p class="chart-caption">Most frequent terms across real-labeled training articles.</p>
+    </div>
+    <div class="chart-card">
+      <h3>Fake articles — common words</h3>
+      <img src="{{ url_for('static', filename='img/wordcloud_fake.png') }}" alt="Word cloud of fake articles" class="chart-img">
+      <p class="chart-caption">Most frequent terms across fake-labeled training articles.</p>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if metrics.has_calibration_chart %}
+<section class="section">
+  <div class="section-inner">
+    <div class="chart-card" style="max-width:560px;">
+      <h3>Confidence calibration</h3>
+      <img src="{{ url_for('static', filename='img/calibration.png') }}" alt="Confidence calibration diagram" class="chart-img">
+      <p class="chart-caption">
+        Checks whether the model's confidence scores are trustworthy — e.g.
+        when it says "80% confident this is FAKE", is it actually right
+        about 80% of the time? A curve close to the dashed diagonal means
+        the model's confidence is well-calibrated, not just accurate.
+      </p>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <h3>All models — full comparison</h3>
+    <table class="data-table full-width">
+      <thead>
+        <tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Train time</th></tr>
+      </thead>
+      <tbody>
+        {% for name, m in metrics.all_models.items() %}
+        <tr class="{{ 'highlight-row' if name == metrics.deployed_model }}">
+          <td>{{ name }}{% if name == metrics.deployed_model %} <span class="badge">Deployed</span>{% endif %}</td>
+          <td>{{ m.accuracy }}%</td>
+          <td>{{ m.precision }}%</td>
+          <td>{{ m.recall }}%</td>
+          <td>{{ m.f1_score }}%</td>
+          <td>{{ m.train_time_sec }}s</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if fake_words or real_words %}
+<section class="section section-alt">
+  <div class="section-inner two-col">
+    <div class="table-card">
+      <h3>Strongest FAKE-indicating words</h3>
+      <p class="chart-caption" style="margin-bottom:14px;">Words with the highest learned model weight toward FAKE, across the whole vocabulary — not just one article.</p>
+      <table class="data-table">
+        {% for word, weight in fake_words %}
+        <tr><td class="c-fake">{{ word }}</td><td>{{ weight }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="table-card">
+      <h3>Strongest REAL-indicating words</h3>
+      <p class="chart-caption" style="margin-bottom:14px;">Words with the highest learned model weight toward REAL, across the whole vocabulary.</p>
+      <table class="data-table">
+        {% for word, weight in real_words %}
+        <tr><td class="c-real">{{ word }}</td><td>{{ weight }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endif %}
+{% endblock %}

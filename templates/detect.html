@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Detect — VeriFact Pro{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Detection tool</span>
+    <h1>Paste, link, or upload. Get a verdict.</h1>
+    <p class="lead">Analyze a single article, a URL, or a whole batch of articles at once.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+
+    {% if not model_ready %}
+    <div class="notice notice-warn">
+      <strong>Model not trained yet.</strong> Run <code>python model/train_model.py</code>
+      from the project root, then reload this page.
+    </div>
+    {% endif %}
+
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="text">Paste text</button>
+      <button class="mode-tab" data-mode="url">From URL</button>
+      <button class="mode-tab" data-mode="batch">Batch upload (CSV)</button>
+    </div>
+
+    <!-- TEXT MODE -->
+    <div class="mode-panel" id="mode-text">
+      <div class="detect-layout">
+        <div class="detect-input-panel">
+          <label for="newsText" class="field-label">News article text</label>
+          <div class="textarea-wrap">
+            <textarea id="newsText" rows="12" placeholder="Paste a headline and/or article body here..."></textarea>
+            <button id="voiceBtn" class="voice-btn" title="Dictate with your microphone" type="button">🎙</button>
+          </div>
+          <div class="input-footer">
+            <span id="charCount" class="char-count">0 characters</span>
+            <button id="analyzeBtn" class="btn btn-primary" {{ 'disabled' if not model_ready }}>Analyze article</button>
+          </div>
+          <div class="sample-buttons">
+            <span class="sample-label">Try a sample:</span>
+            <button class="sample-btn" data-sample="real">Real-style sample</button>
+            <button class="sample-btn" data-sample="fake">Fake-style sample</button>
+          </div>
+        </div>
+
+        <div class="detect-result-panel" id="resultPanel">
+          <div class="result-placeholder" id="resultPlaceholder">
+            <div class="placeholder-gauge">◎</div>
+            <p>Your result will appear here once you analyze an article.</p>
+          </div>
+
+          <div class="result-content" id="resultContent" style="display:none;">
+            <div class="verdict-block">
+              <span class="verdict-label" id="verdictLabel">REAL</span>
+              <span class="verdict-confidence" id="verdictConfidence">0% confidence</span>
+            </div>
+
+            <div class="prob-bars">
+              <div class="prob-row">
+                <span class="prob-tag c-real">REAL</span>
+                <div class="prob-track"><div class="prob-fill fill-real" id="realBar" style="width:0%"></div></div>
+                <span class="prob-pct" id="realPct">0%</span>
+              </div>
+              <div class="prob-row">
+                <span class="prob-tag c-fake">FAKE</span>
+                <div class="prob-track"><div class="prob-fill fill-fake" id="fakeBar" style="width:0%"></div></div>
+                <span class="prob-pct" id="fakePct">0%</span>
+              </div>
+            </div>
+
+            <div class="result-meta">
+              <div><span>Model used</span><strong id="modelUsed">—</strong></div>
+              <div><span>Word count</span><strong id="wordCount">—</strong></div>
+              <div><span>Characters</span><strong id="charCountResult">—</strong></div>
+            </div>
+
+            <div class="indicator-words" id="indicatorWords"></div>
+
+            <div class="factcheck-box" id="factcheckBox"></div>
+
+            <div class="result-note" id="resultNote"></div>
+
+            <button id="exportPdfBtn" class="btn btn-ghost btn-block" style="margin-top:16px;">Download PDF report</button>
+            <button id="copyResultBtn" class="copy-btn" type="button">📋 Copy result as text</button>
+          </div>
+
+          <div class="result-error" id="resultError" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- URL MODE -->
+    <div class="mode-panel" id="mode-url" style="display:none;">
+      <div class="detect-layout">
+        <div class="detect-input-panel">
+          <label for="newsUrl" class="field-label">Article URL</label>
+          <input type="text" id="newsUrl" placeholder="https://example.com/some-news-article">
+          <div class="input-footer">
+            <span class="char-count">The article text will be extracted automatically.</span>
+            <button id="analyzeUrlBtn" class="btn btn-primary" {{ 'disabled' if not model_ready }}>Fetch &amp; analyze</button>
+          </div>
+        </div>
+        <div class="detect-result-panel" id="urlResultPanel">
+          <div class="result-placeholder"><div class="placeholder-gauge">🔗</div><p>Paste a news article URL to fetch and analyze it.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BATCH MODE -->
+    <div class="mode-panel" id="mode-batch" style="display:none;">
+      <div class="detect-input-panel">
+        <label class="field-label">Upload a CSV file (must have a column named "text")</label>
+        <input type="file" id="batchFile" accept=".csv">
+        <button id="analyzeBatchBtn" class="btn btn-primary" style="margin-top:14px;" {{ 'disabled' if not model_ready }}>Analyze batch</button>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:10px;">Max 200 rows processed per upload for this demo.</p>
+      </div>
+      <div id="batchResults" style="margin-top:24px;"></div>
+    </div>
+
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

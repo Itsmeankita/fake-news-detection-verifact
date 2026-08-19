@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}FAQ — VeriFact Pro{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Questions</span>
+    <h1>Frequently asked questions.</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="faq-list">
+      <div class="faq-item">
+        <h3>Is VeriFact a fact-checker?</h3>
+        <p>No. It's a style/pattern classifier — it estimates how similar an article's writing style is to known real vs. fabricated articles. It doesn't verify facts against a knowledge base the way a human fact-checker or a site like Snopes does.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Why did it get my example wrong?</h3>
+        <p>No text classifier is 100% accurate. The model was trained on a specific dataset (US politics/news-heavy) — articles very different in topic, language, or style from that training data are more likely to be misclassified.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What data was the model trained on?</h3>
+        <p>The ISOT Fake and Real News Dataset from Kaggle — about 45,000 labeled articles, roughly half real (Reuters) and half fabricated/hyperpartisan. Full details are on the Analytics page.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Does it work in languages other than English?</h3>
+        <p>Not currently — the text cleaning, stopword list, and training data are all English-only. Multi-language support would need a translated or separately labeled non-English dataset.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is my pasted text stored anywhere?</h3>
+        <p>Only if you're logged in — in that case a short preview (up to ~280 characters) is saved to your personal history so you can review past checks. If you're not logged in, nothing is stored.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I use this via an API?</h3>
+        <p>Yes — every logged-in user gets an API key (visible on your Dashboard) and the same <code>/api/predict</code> endpoint the website uses. See the README for request/response examples.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What if the URL detector can't read a page?</h3>
+        <p>Some news sites block automated requests or load content via JavaScript, which a simple scraper can't execute. If URL detection fails, copy the article text directly into the Detect page instead.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

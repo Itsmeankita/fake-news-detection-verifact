@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Quiz — VeriFact Pro{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="section-inner">
+    <span class="eyebrow">Media literacy</span>
+    <h1>Spot the fake news.</h1>
+    <p class="lead">Guess REAL or FAKE for each headline before checking the answer — see how your instinct compares to the model.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div id="quizContainer"></div>
+    <div id="quizScore" class="quiz-score" style="display:none;"></div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

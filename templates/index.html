@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}VeriFact — AI Fake News Detection{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow">NLP · Text Classification · Final Year Project</span>
+      <h1>Read the signal, <br>not just the story.</h1>
+      <p class="hero-sub">
+        VeriFact is an NLP system that reads a news article and estimates
+        whether it's <strong class="c-real">REAL</strong> or
+        <strong class="c-fake">FAKE</strong> — trained on tens of thousands
+        of labeled articles using TF-IDF text vectorization and classic
+        machine learning, running entirely on CPU.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('detect') }}" class="btn btn-primary">Analyze an article →</a>
+        <a href="{{ url_for('about') }}" class="btn btn-ghost">How it works</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span class="stat-num">{{ metrics.deployed_metrics.accuracy if metrics else '—' }}%</span>
+          <span class="stat-label">Test accuracy</span>
+        </div>
+        <div>
+          <span class="stat-num">{{ metrics.total_articles if metrics else '—' }}</span>
+          <span class="stat-label">Training articles</span>
+        </div>
+        <div>
+          <span class="stat-num">&lt;1s</span>
+          <span class="stat-label">Prediction time</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="gauge-card">
+        <p class="gauge-card-label">Verification Signal</p>
+        <div class="gauge">
+          <svg viewBox="0 0 200 120" class="gauge-svg">
+            <path d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="#1B2740" stroke-width="16" stroke-linecap="round"/>
+            <path d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="url(#gaugeGrad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="45" class="gauge-arc"/>
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#3DDC97"/>
+                <stop offset="55%" stop-color="#FFB454"/>
+                <stop offset="100%" stop-color="#FF5D5D"/>
+              </linearGradient>
+            </defs>
+            <line x1="100" y1="110" x2="140" y2="55" stroke="#E8EDF4" stroke-width="3" stroke-linecap="round" class="gauge-needle"/>
+            <circle cx="100" cy="110" r="6" fill="#E8EDF4"/>
+          </svg>
+          <div class="gauge-readout">
+            <span class="gauge-verdict c-real">LIKELY REAL</span>
+            <span class="gauge-confidence">87.4% confidence</span>
+          </div>
+        </div>
+        <p class="gauge-card-caption">Live-style preview — try it on the Detect page</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <span class="eyebrow">What it does</span>
+    <h2>One paragraph in. A verified signal out.</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">◈</div>
+        <h3>Paste any article</h3>
+        <p>Drop in a headline, paragraph, or full article text — no links or logins required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⌁</div>
+        <h3>NLP pipeline runs instantly</h3>
+        <p>The text is cleaned, lemmatized, and converted into TF-IDF features the model understands.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◎</div>
+        <h3>Get REAL / FAKE + confidence</h3>
+        <p>A trained classifier scores the article and returns a verdict with a calibrated confidence percentage.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">▤</div>
+        <h3>Transparent performance</h3>
+        <p>The Analytics page shows exactly how the model was trained and how accurate it really is — no black box.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-inner two-col">
+    <div>
+      <span class="eyebrow">Why it matters</span>
+      <h2>Misinformation spreads faster than corrections.</h2>
+      <p class="lead">
+        Studies on online information spread consistently find that false
+        stories reach more people, faster, than true ones — especially on
+        social platforms where headlines are judged in seconds. A
+        lightweight, transparent classifier like VeriFact can't replace
+        human judgment or professional fact-checking, but it can act as a
+        first-pass signal that prompts a second look before sharing.
+      </p>
+      <a href="{{ url_for('about') }}" class="btn btn-ghost">See the full methodology →</a>
+    </div>
+    <div class="mini-cards">
+      <div class="mini-card">
+        <span class="mini-card-num">TF-IDF</span>
+        <span class="mini-card-label">Feature extraction — unigrams + bigrams, 5,000 features</span>
+      </div>
+      <div class="mini-card">
+        <span class="mini-card-num">3 models</span>
+        <span class="mini-card-label">Logistic Regression, Naive Bayes &amp; Linear SVM compared</span>
+      </div>
+      <div class="mini-card">
+        <span class="mini-card-num">CPU-only</span>
+        <span class="mini-card-label">Trains locally in minutes — no GPU, no cloud</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="section-inner cta-band-inner">
+    <div>
+      <h2>Try it on a real headline.</h2>
+      <p>Paste any article text and see the model's verdict in real time.</p>
+    </div>
+    <a href="{{ url_for('detect') }}" class="btn btn-primary">Open the detector →</a>
+  </div>
+</section>
+
+{% endblock %}
