@@ -1,5 +1,5 @@
 # VeriFact Pro — AI/ML Fake News Detection System
-
+🔗 **Live Demo:** https://fake-news-detection-verifact.onrender.com
 **Submitted by:** Ankita Kumari
 **Project:** Final Year Project — AI/ML (Fake News Detection System)
 **Date:** August 2026
